@@ -1,5 +1,6 @@
 package me.bunnky.slimevision;
 
+import fr.skytasul.glowingentities.GlowingBlocks;
 import me.bunnky.slimevision.slimefun.Setup;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -12,6 +13,7 @@ public class SlimeVision extends JavaPlugin implements SlimefunAddon {
     private static SlimeVision instance;
     private final String username;
     private final String repo;
+    private GlowingBlocks glowingBlocks;
 
     public SlimeVision() {
         this.username = "Bunnky";
@@ -30,8 +32,11 @@ public class SlimeVision extends JavaPlugin implements SlimefunAddon {
 
         saveDefaultConfig();
 
+        glowingBlocks = new GlowingBlocks(this);
+
         Setup.setup();
         new Metrics(this, 23251);
+
     }
 
     public static void consoleMsg(@Nonnull String string) {
@@ -43,8 +48,15 @@ public class SlimeVision extends JavaPlugin implements SlimefunAddon {
         return instance;
     }
 
+    public GlowingBlocks getGlowingBlocks() {
+        return glowingBlocks;
+    }
+
     @Override
     public void onDisable() {
+        if (glowingBlocks != null) {
+            glowingBlocks.disable();
+        }
     }
 
     @Override
