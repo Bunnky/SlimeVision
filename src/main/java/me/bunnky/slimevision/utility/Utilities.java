@@ -7,9 +7,8 @@ import me.bunnky.slimevision.items.ParticleItem;
 import me.bunnky.slimevision.items.slimeeyes.SlimeEye;
 import me.bunnky.slimevision.items.slimeeyes.SlimeEyeGod;
 import me.mrCookieSlime.Slimefun.api.BlockStorage;
-import org.bukkit.Color;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.enchantments.Enchantment;
@@ -24,7 +23,6 @@ import java.util.List;
 
 public class Utilities {
 
-    private static final float PARTICLE_SIZE = 2;
 
     public static void setGlow(@NotNull SlimefunItemStack i) {
         ItemMeta m = i.getItemMeta();
@@ -35,111 +33,40 @@ public class Utilities {
         }
     }
 
-    private static final Vector[] OFFSETS = {
-        new Vector(0.5, 1, 0.5),    // Top
-        new Vector(0.5, 0, 0.5),    // Bottom
-        new Vector(1, 0.5, 0.5),    // East
-        new Vector(0, 0.5, 0.5),    // West
-        new Vector(0.5, 0.5, 1),    // South
-        new Vector(0.5, 0.5, 0)     // North
-    };
-
-    public static void particlesVanilla(Player p, Vector blockLocation) {
-        Color[] c = {
-            Color.RED,
-            Color.AQUA,
-            Color.YELLOW,
-            Color.GREEN,
-            Color.ORANGE,
-            Color.PURPLE
-        };
-        spawnParticles(p, blockLocation, c);
-    }
-
-    public static void particlesNetworks(Player p, Vector blockLocation) {
-        Color[] c = {
-            Color.FUCHSIA,
-            Color.FUCHSIA,
-            Color.PURPLE,
-            Color.PURPLE,
-            Color.PURPLE,
-            Color.PURPLE
-        };
-        spawnParticles(p, blockLocation, c);
-    }
-
-    public static void particlesInverted(Player p, Vector blockLocation) {
-        Color[] c = {
-            Color.RED,
-            Color.AQUA,
-            Color.YELLOW,
-            Color.GREEN,
-            Color.ORANGE,
-            Color.PURPLE
-        };
-        spawnInvertedParticle(p, blockLocation, c[0]);
-    }
-
-    public static void particlesInverted(Player p, Vector loc, Color c) {
-        spawnInvertedParticle(p, loc, c);
-    }
-
-    public static @NotNull String getColorName(@NotNull Color c) {
-        if (c.equals(Color.RED)) {
+    public static @NotNull String getColorName(@NotNull ChatColor c) {
+        if (c.equals(ChatColor.RED)) {
             return "Red";
-        } else if (c.equals(Color.AQUA)) {
+        } else if (c.equals(ChatColor.DARK_RED)) {
+            return "Dark Red";
+        } else if (c.equals(ChatColor.DARK_AQUA)) {
+            return "Dark Aqua";
+        } else if (c.equals(ChatColor.AQUA)) {
             return "Aqua";
-        } else if (c.equals(Color.YELLOW)) {
+        } else if (c.equals(ChatColor.YELLOW)) {
             return "Yellow";
-        } else if (c.equals(Color.GREEN)) {
+        } else if (c.equals(ChatColor.GREEN)) {
             return "Green";
-        } else if (c.equals(Color.ORANGE)) {
-            return "Orange";
-        } else if (c.equals(Color.PURPLE)) {
-            return "Purple";
-        } else if (c.equals(Color.BLUE)) {
+        } else if (c.equals(ChatColor.DARK_GREEN)) {
+            return "Dark Green";
+        } else if (c.equals(ChatColor.DARK_PURPLE)) {
+            return "Dark Purple";
+        } else if (c.equals(ChatColor.LIGHT_PURPLE)) {
+            return "Light Purple";
+        } else if (c.equals(ChatColor.BLUE)) {
             return "Blue";
-        } else if (c.equals(Color.BLACK)) {
+        } else if (c.equals(ChatColor.DARK_BLUE)) {
+            return "Dark Blue";
+        } else if (c.equals(ChatColor.BLACK)) {
             return "Black";
-        } else if (c.equals(Color.WHITE)) {
+        } else if (c.equals(ChatColor.WHITE)) {
             return "White";
-        } else if (c.equals(Color.GRAY)) {
+        } else if (c.equals(ChatColor.GRAY)) {
             return "Gray";
-        } else if (c.equals(Color.LIME)) {
-            return "Lime";
-        } else if (c.equals(Color.FUCHSIA)) {
-            return "Pink";
-        } else if (c.equals(Color.MAROON)) {
-            return "Maroon";
-        } else if (c.equals(Color.TEAL)) {
-            return "Light Blue";
+        } else if (c.equals(ChatColor.DARK_GRAY)) {
+            return "Dark Gray";
         } else {
             return "Unknown";
         }
-    }
-
-
-    public static void particlesSingleColor(Player p, Vector loc, Color c) {
-        Color[] colors = {c, c, c, c, c, c};
-        spawnParticles(p, loc, colors);
-    }
-
-    private static void spawnParticles(Player p, Vector loc, Color[] colors) {
-        for (int i = 0; i < OFFSETS.length; i++) {
-            p.spawnParticle(
-                Particle.REDSTONE, loc.clone().add(OFFSETS[i]).toLocation(p.getWorld()),
-                1, 0, 0, 0, 1, new Particle.DustOptions(colors[i], PARTICLE_SIZE)
-            );
-        }
-    }
-
-    private static void spawnInvertedParticle(Player p, Vector loc, Color color) {
-        loc = loc.clone().add(new Vector(0, 0, 0));
-
-        p.spawnParticle(
-            Particle.REDSTONE, loc.toLocation(p.getWorld()),
-            1, 0, 0, 0, 1, new Particle.DustOptions(color, 4)
-        );
     }
 
     public static void placeBlock(@NotNull Block block, @NotNull BlockFace face, @NotNull Material material) {

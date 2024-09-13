@@ -84,5 +84,6 @@ public class SlimeCleaner extends SlimeEye {
 
     @Override
     protected void checkBlocks(@NotNull Player p, boolean inverted) {
+        //lazy
     }
 }
