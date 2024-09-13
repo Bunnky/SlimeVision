@@ -23,7 +23,7 @@ import static org.bukkit.Bukkit.getServer;
 
 public class SFS extends SimpleSlimefunItem<ItemUseHandler> {
 
-    private final Plugin slimefun;
+    private final Plugin sf;
     private Field asField;
     private Method savePlayers;
     private Method saveBlocks;
@@ -36,17 +36,17 @@ public class SFS extends SimpleSlimefunItem<ItemUseHandler> {
         super(itemGroup, item, recipeType, recipe);
         this.hidden = true;
         Utilities.setGlow(item);
-        this.slimefun = getServer().getPluginManager().getPlugin("Slimefun");
+        this.sf = getServer().getPluginManager().getPlugin("Slimefun");
         init();
     }
 
     private void init() {
-        if (slimefun != null) {
+        if (sf != null) {
             try {
-                asField = slimefun.getClass().getDeclaredField("autoSavingService");
+                asField = sf.getClass().getDeclaredField("autoSavingService");
                 asField.setAccessible(true);
 
-                Object autoSavingServiceInstance = asField.get(slimefun);
+                Object autoSavingServiceInstance = asField.get(sf);
                 Class<?> autoSavingServiceClass = autoSavingServiceInstance.getClass();
 
                 savePlayers = autoSavingServiceClass.getDeclaredMethod("saveAllPlayers");
@@ -83,8 +83,8 @@ public class SFS extends SimpleSlimefunItem<ItemUseHandler> {
         SlimeVision.consoleMsg("MANUAL SAVE INITIATED");
 
         try {
-            if (slimefun != null && asField != null) {
-                Object autoSavingServiceInstance = asField.get(slimefun);
+            if (sf != null && asField != null) {
+                Object autoSavingServiceInstance = asField.get(sf);
                 if (savePlayers != null) {
                     savePlayers.invoke(autoSavingServiceInstance);
                 }
