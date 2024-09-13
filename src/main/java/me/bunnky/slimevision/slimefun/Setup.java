@@ -50,7 +50,7 @@ public class Setup {
             "&eR-Click: &7Activate Slime Gaze",
             "&7for 10 seconds",
             "&eSneak + R-Click: &7Change",
-            "&7particle color",
+            "&7glow color",
             "",
             "&eCooldown: &760 Seconds",
             "&eRange: &720"
@@ -63,7 +63,7 @@ public class Setup {
             "&eR-Click: &7Activate Slime Gaze",
             "&7for 10 seconds",
             "&eSneak + R-Click: &7Change",
-            "&7particle color",
+            "&7glow color",
             "",
             "&eCooldown: &740 Seconds",
             "&eRange: &712"
@@ -76,7 +76,7 @@ public class Setup {
             "&eR-Click: &7Activate Slime Gaze",
             "&7for 10 seconds",
             "&eSneak + R-Click: &7Change",
-            "&7particle color",
+            "&7glow color",
             "",
             "&eCooldown: &725 Seconds",
             "&eRange: &77"
@@ -89,7 +89,7 @@ public class Setup {
             "&eR-Click: &7Activate Slime Gaze",
             "&7for 10 seconds",
             "&eSneak + R-Click: &7Change",
-            "&7particle color",
+            "&7glow color",
             "",
             "&eCooldown: &710 Seconds",
             "&eRange: &73"
@@ -102,7 +102,7 @@ public class Setup {
             "&eR-Click: &7Activate Networks ",
             "&7Slime Gaze for 10 seconds",
             "&eSneak + R-Click: &7Change",
-            "&7particle color",
+            "&7glow color",
             "",
             "&eCooldown: &760 Seconds",
             "&eRange: &720"
@@ -115,7 +115,7 @@ public class Setup {
             "&eR-Click: &7Activate Networks ",
             "&7Slime Gaze for 10 seconds",
             "&eSneak + R-Click: &7Change",
-            "&7particle color",
+            "&7glow color",
             "",
             "&eCooldown: &740 Seconds",
             "&eRange: &712"
@@ -128,7 +128,7 @@ public class Setup {
             "&eR-Click: &7Activate Networks ",
             "&7Slime Gaze for 10 seconds",
             "&eSneak + R-Click: &7Change",
-            "&7particle color",
+            "&7glow color",
             "",
             "&eCooldown: &725 Seconds",
             "&eRange: &77"
@@ -141,7 +141,7 @@ public class Setup {
             "&eR-Click: &7Activate Networks ",
             "&7Slime Gaze for 10 seconds",
             "&eSneak + R-Click: &7Change",
-            "&7particle color",
+            "&7glow color",
             "",
             "&eCooldown: &710 Seconds",
             "&eRange: &73"
@@ -154,7 +154,7 @@ public class Setup {
             "&eR-Click: &7Activate Inverted",
             "&7Slime Gaze for 10 seconds",
             "&eSneak + R-Click: &7Change",
-            "&7particle color",
+            "&7glow color",
             "",
             "&eCooldown: &760 Seconds",
             "&eRange: &720"
@@ -167,7 +167,7 @@ public class Setup {
             "&eR-Click: &7Activate Inverted",
             "&7Slime Gaze for 10 seconds",
             "&eSneak + R-Click: &7Change",
-            "&7particle color",
+            "&7glow color",
             "",
             "&eCooldown: &740 Seconds",
             "&eRange: &712"
@@ -180,7 +180,7 @@ public class Setup {
             "&eR-Click: &7Activate Inverted",
             "&7Slime Gaze for 10 seconds",
             "&eSneak + R-Click: &7Change",
-            "&7particle color",
+            "&7glow color",
             "",
             "&eCooldown: &725 Seconds",
             "&eRange: &77"
@@ -193,7 +193,7 @@ public class Setup {
             "&eR-Click: &7Activate Inverted",
             "&7Slime Gaze for 10 seconds",
             "&eSneak + R-Click: &7Change",
-            "&7particle color",
+            "&7glow color",
             "",
             "&eCooldown: &710 Seconds",
             "&eRange: &73"
@@ -322,10 +322,9 @@ public class Setup {
             "&7to visualize Slimefun setups. Slime Eyes do",
             "&7this by using an effect we call &fSlime Gaze&7.",
             "",
-            "&f&nSlime Gaze&7 will place particles on all",
-            "&7sides of a valid Slimefun machine/block",
-            "&7to provide max visibility. &oPlayer particle",
-            "&7&osettings have no effect on Slime Gaze.",
+            "&f&nSlime Gaze&7 causes all Slimefun machines",
+            "&7within a radius to glow. &oThe glow can even be",
+            "&7&oseen through walls or obstacles!",
             ""
         );
 
@@ -336,7 +335,7 @@ public class Setup {
             "",
             "&f&nInverted&7 Slime Gaze looks for air blocks that",
             "&7contain Slimefun Block Storage data, and will",
-            "&7place a large particle at that location. &oThis",
+            "&7mark that location with a red glow. &oThis",
             "&7&ois really helpful if your server crashes.",
             "",
             "&f&nNetworks&7 Slime Gaze is exclusive to Network",
@@ -353,9 +352,8 @@ public class Setup {
             "",
             "&7The &f&nSlime Scribe&7 will check for invisible",
             "&7machines and fill a book with location data if",
-            "&7any are found. &oThis can be handy if you want to",
-            "&7&oavoid particle lag. It's also a good way to save",
-            "&7&othe locations for yourself, or for reporting.",
+            "&7any are found. It's a good way to save the",
+            "&7&olocations for yourself, or for reporting.",
             "",
             "&f&nParticle&7 items are mostly used for crafting",
             "&7recipes, but can also fire short particle beams.",
