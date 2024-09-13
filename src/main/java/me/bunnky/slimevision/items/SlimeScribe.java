@@ -32,7 +32,7 @@ public class SlimeScribe extends SlimeEyeInverted {
         super(itemGroup, item, recipeType, recipe, radius, cooldown);
     }
 
-    protected ItemStack createBook(Player p, List<Block> foundMachines) {
+    protected ItemStack createBook(Player p, List<Block> found) {
         ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
         BookMeta meta = (BookMeta) book.getItemMeta();
 
@@ -45,8 +45,8 @@ public class SlimeScribe extends SlimeEyeInverted {
             .append(p.getLocation().getBlockY()).append(", ")
             .append(p.getLocation().getBlockZ()).append("\n\n");
 
-        for (int i = 0; i < foundMachines.size(); i++) {
-            Block b = foundMachines.get(i);
+        for (int i = 0; i < found.size(); i++) {
+            Block b = found.get(i);
             firstPage.append((i + 1)).append(". ")
                 .append(b.getX()).append(", ")
                 .append(b.getY()).append(", ")
@@ -78,8 +78,8 @@ public class SlimeScribe extends SlimeEyeInverted {
             return;
         }
 
-        UUID playerUUID = p.getUniqueId();
-        Long lastTime = lastActionTime.get(playerUUID);
+        UUID pUUID = p.getUniqueId();
+        Long lastTime = lastActionTime.get(pUUID);
         long currentTime = System.currentTimeMillis();
         int cooldown = getCooldown();
 
@@ -89,7 +89,7 @@ public class SlimeScribe extends SlimeEyeInverted {
             return;
         }
 
-        lastActionTime.put(playerUUID, currentTime);
+        lastActionTime.put(pUUID, currentTime);
 
         List<Block> foundMachines = checkArea(p);
 
