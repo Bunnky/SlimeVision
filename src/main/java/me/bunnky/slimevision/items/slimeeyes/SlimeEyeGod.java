@@ -10,6 +10,7 @@ import me.bunnky.slimevision.SlimeVision;
 import me.bunnky.slimevision.utility.Utilities;
 import me.mrCookieSlime.Slimefun.api.BlockStorage;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -20,7 +21,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -29,16 +29,25 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import static org.bukkit.Bukkit.getServer;
+
 public class SlimeEyeGod extends SlimeEye {
 
-    private boolean isToggledOn = false;
-    private boolean isInvisibleToggledOn = false;
-    private int netMsgCooldown = 0, prevNetCount = 0, prevAirCount = 0, airMsgCooldown = 0, nullMsgCooldown = 0, prevNullCount = 0;
+    private final Map<UUID, Boolean> toggledOn = new HashMap<>();
+    private final Map<UUID, Boolean> invisibleToggledOn = new HashMap<>();
+    private final Map<UUID, Long> lastMessageSentMap = new HashMap<>();
+    private final Map<UUID, Integer> lastNetworkCountMap = new HashMap<>();
+    private final Map<UUID, Integer> lastTotalCountMap = new HashMap<>();
+    private final Map<UUID, Integer> lastAirCountMap = new HashMap<>();
+    private final Map<UUID, BukkitRunnable> activeTasks = new HashMap<>();
 
     public SlimeEyeGod(ItemGroup itemGroup,
                        SlimefunItemStack item,
@@ -65,9 +74,12 @@ public class SlimeEyeGod extends SlimeEye {
         if (!(Utilities.isSlimeEyeGod(e.getItem()))) {
             return;
         }
+        if (e.getAction() != Action.LEFT_CLICK_BLOCK) {
+            return;
+        }
 
-        Block clickedBlock = e.getClickedBlock();
-        if (clickedBlock == null || e.getAction() != Action.LEFT_CLICK_BLOCK) {
+        Block b = e.getClickedBlock();
+        if (b == null) {
             return;
         }
 
@@ -79,26 +91,26 @@ public class SlimeEyeGod extends SlimeEye {
         }
 
         if (p.isSneaking()) {
-            placeBlock(clickedBlock, e.getBlockFace());
+            placeBlock(b, e.getBlockFace());
         } else {
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    BlockBreakEvent e = new BlockBreakEvent(clickedBlock, p);
+                    BlockBreakEvent e = new BlockBreakEvent(b, p);
                     Bukkit.getPluginManager().callEvent(e);
                     if (e.isCancelled()) {
                         return;
                     }
 
-                    BlockStorage.clearBlockInfo(clickedBlock);
-                    clickedBlock.setType(Material.AIR);
+                    BlockStorage.clearBlockInfo(b);
+                    b.setType(Material.AIR);
                 }
             }.runTaskLater(SlimeVision.getInstance(), 1);
         }
     }
 
-    private void placeBlock(Block block, BlockFace face) {
-        Utilities.placeBlock(block, face, Material.TARGET);
+    private void placeBlock(Block b, BlockFace f) {
+        Utilities.placeBlock(b, f, Material.TARGET);
     }
 
     @Override
@@ -106,21 +118,27 @@ public class SlimeEyeGod extends SlimeEye {
         e.cancel();
         Player p = e.getPlayer();
 
-        if (!p.isOp() || e.getHand() == null) {
+        if (!p.isOp()) {
             return;
         }
 
-        UUID playerUUID = p.getUniqueId();
+        UUID pUUID = p.getUniqueId();
+
+        toggledOn.putIfAbsent(pUUID, false);
+        invisibleToggledOn.putIfAbsent(pUUID, false);
+        cachedBlocks.putIfAbsent(pUUID, new HashSet<>());
+
+        Set<Block> playerCachedBlocks = cachedBlocks.get(pUUID);
 
         if (e.getHand() == EquipmentSlot.OFF_HAND) {
-            if (!cached.isEmpty()) {
-                cached.clear();
+            if (!playerCachedBlocks.isEmpty()) {
+                playerCachedBlocks.clear();
             }
 
             checkInvisibleBlocks(p);
 
-            if (!cached.isEmpty()) {
-                placeBlocksAtInvisibleLocations();
+            if (!playerCachedBlocks.isEmpty()) {
+                placeBlocksAtInvisibleLocations(pUUID);
                 p.sendMessage("§6Blocks placed at invisible machine locations.");
             } else {
                 p.sendMessage("§cNo invisible machines to place blocks at.");
@@ -128,51 +146,56 @@ public class SlimeEyeGod extends SlimeEye {
             return;
         }
 
+        boolean isInvertedGazeOn = invisibleToggledOn.getOrDefault(pUUID, false);
+
         if (p.isSneaking()) {
-            isInvisibleToggledOn = !isInvisibleToggledOn;
-            if (isInvisibleToggledOn) {
-                if (isToggledOn) {
-                    cancelHighlight(playerUUID);
-                    isToggledOn = false;
-                    p.sendMessage("§cSlime Gaze disabled.");
-                }
-                cached.clear();
+            if (isInvertedGazeOn) {
+                cancelHighlightTask(pUUID);
+                playerCachedBlocks.clear();
+                invisibleToggledOn.put(pUUID, false);
+                p.sendMessage("§cInverted Slime Gaze disabled.");
+            } else {
+                cancelHighlightTask(pUUID);
+                playerCachedBlocks.clear();
+                toggledOn.put(pUUID, false);
+                invisibleToggledOn.put(pUUID, true);
                 startHighlightTask(p, true);
                 p.sendMessage("§6Inverted Slime Gaze enabled.");
-            } else {
-                cancelHighlight(playerUUID);
-                cached.clear();
-                p.sendMessage("§cInverted Slime Gaze disabled.");
             }
             return;
         }
 
-        if (isInvisibleToggledOn) {
-            cancelHighlight(playerUUID);
-            isInvisibleToggledOn = false;
+        if (isInvertedGazeOn) {
+            cancelHighlightTask(pUUID);
+            playerCachedBlocks.clear();
+            invisibleToggledOn.put(pUUID, false);  // Disable inverted gaze
             p.sendMessage("§cInverted Slime Gaze disabled.");
         }
 
-        isToggledOn = !isToggledOn;
-        if (isToggledOn) {
-            cached.clear();
+        boolean currentState = toggledOn.getOrDefault(pUUID, false);
+        toggledOn.put(pUUID, !currentState);
+
+        if (toggledOn.get(pUUID)) {
+            playerCachedBlocks.clear();
             startHighlightTask(p, false);
             p.sendMessage("§6Slime Gaze enabled.");
         } else {
-            cancelHighlight(playerUUID);
-            cached.clear();
+            cancelHighlightTask(pUUID);
+            playerCachedBlocks.clear();
             p.sendMessage("§cSlime Gaze disabled.");
         }
     }
 
     protected void startHighlightTask(@NotNull Player p, boolean isInvisible) {
-        UUID playerUUID = p.getUniqueId();
+        UUID pUUID = p.getUniqueId();
 
-        if (activeTasks.containsKey(playerUUID) || (isInvisible ? !isInvisibleToggledOn : !isToggledOn)) {
+        boolean currentToggle = isInvisible ? invisibleToggledOn.getOrDefault(pUUID, false) : toggledOn.getOrDefault(pUUID, false);
+
+        if (activeTasks.containsKey(pUUID) || !currentToggle) {
             return;
         }
 
-        activeTasks.put(playerUUID, new BukkitRunnable() {
+        BukkitRunnable task = new BukkitRunnable() {
             @Override
             public void run() {
                 if (isInvisible) {
@@ -181,7 +204,29 @@ public class SlimeEyeGod extends SlimeEye {
                     checkBlocks(p);
                 }
             }
-        }.runTaskTimer(SlimeVision.getInstance(), 0L, 40L));
+        };
+
+        task.runTaskTimer(SlimeVision.getInstance(), 0L, 20L);
+        activeTasks.put(pUUID, task);
+
+    }
+
+    protected void cancelHighlightTask(UUID pUUID) {
+        BukkitRunnable task = activeTasks.remove(pUUID);
+        if (task != null) {
+            task.cancel();
+        }
+
+        Player p = getServer().getPlayer(pUUID);
+        if (p != null) {
+            Set<Block> blocksToUnset = cachedBlocks.get(pUUID);
+            if (blocksToUnset != null) {
+                for (Block b : blocksToUnset) {
+                    updateGlowingBlock(b, p, null, false);
+                }
+            }
+        }
+        cachedBlocks.remove(pUUID, cachedBlocks);
     }
 
     protected void checkInvisibleBlocks(@NotNull Player p) {
@@ -192,19 +237,20 @@ public class SlimeEyeGod extends SlimeEye {
         checkBlocks(p, false);
     }
 
-    private void placeBlocksAtInvisibleLocations() {
-        for (Block invisibleBlock : cached) {
-            if (Utilities.isAirOrLiquid(invisibleBlock)) {
-                Utilities.placeBlock(invisibleBlock, BlockFace.SELF, Material.TARGET);
+    private void placeBlocksAtInvisibleLocations(UUID pUUID) {
+        for (Block iBlock : cachedBlocks.get(pUUID)) {
+            if (Utilities.isAirOrLiquid(iBlock)) {
+                Utilities.placeBlock(iBlock, BlockFace.SELF, Material.TARGET);
             }
         }
     }
 
     @Override
     protected void checkBlocks(@NotNull Player p, boolean checkInvisible) {
-        World world = p.getWorld();
-        Vector playerLocation = Utilities.getPlayerVector(p);
-        int pX = playerLocation.getBlockX(), pY = playerLocation.getBlockY(), pZ = playerLocation.getBlockZ();
+        World w = p.getWorld();
+        Vector loc = Utilities.getPlayerVector(p);
+
+        int pX = loc.getBlockX(), pY = loc.getBlockY(), pZ = loc.getBlockZ();
         int minX = pX - r, minY = Utilities.getClampedCoordinate(pY, -r, -64, 320), minZ = pZ - r;
         int maxX = pX + r, maxY = Utilities.getClampedCoordinate(pY, r, -64, 320), maxZ = pZ + r;
 
@@ -212,10 +258,23 @@ public class SlimeEyeGod extends SlimeEye {
         Set<Block> airBlocks = new HashSet<>();
         List<String> nullMachines = new ArrayList<>();
 
+        UUID pUUID = p.getUniqueId();
+
+        Set<Block> playerCachedBlocks = cachedBlocks.computeIfAbsent(pUUID, k -> new HashSet<>());
+
+        Iterator<Block> iterator = playerCachedBlocks.iterator();
+        while (iterator.hasNext()) {
+            Block b = iterator.next();
+            if (!isInRange(b, minX, minY, minZ, maxX, maxY, maxZ)) {
+                updateGlowingBlock(b, p, null, false);
+                iterator.remove();
+            }
+        }
+
         for (int x = minX; x <= maxX; x++) {
             for (int y = minY; y <= maxY; y++) {
                 for (int z = minZ; z <= maxZ; z++) {
-                    Block b = world.getBlockAt(x, y, z);
+                    Block b = w.getBlockAt(x, y, z);
 
                     if (Utilities.hasBlockStorage(b)) {
                         SlimefunItem sfItem = BlockStorage.check(b);
@@ -223,25 +282,26 @@ public class SlimeEyeGod extends SlimeEye {
                             if (checkInvisible) {
                                 if (Utilities.isAirOrLiquid(b)) {
                                     airBlocks.add(b);
-                                    cached.add(b);
-                                    addInvertedParticle(p, b);
+                                    playerCachedBlocks.add(b);
+                                    updateGlowingBlock(b, p, ChatColor.RED, true);
                                 }
                             } else {
-                                if ("Networks".equals(sfItem.getAddon().getName())) {
+                                if ("Networks".equals(sfItem.getAddon().getName()) && !Utilities.isAirOrLiquid(b)) {
                                     networkBlocks.add(b);
-                                    cached.add(b);
-                                    Utilities.particlesNetworks(p, b.getLocation().toVector());
+                                    playerCachedBlocks.add(b);
+                                    updateGlowingBlock(b, p, ChatColor.LIGHT_PURPLE, true);
                                 } else if (Utilities.isAirOrLiquid(b)) {
                                     airBlocks.add(b);
-                                    cached.add(b);
-                                    addInvertedParticle(p, b);
+                                    playerCachedBlocks.add(b);
+                                    updateGlowingBlock(b, p, ChatColor.RED, true);
                                 } else {
-                                    addParticle(p, b);
-                                    cached.add(b);
+                                    playerCachedBlocks.add(b);
+                                    updateGlowingBlock(b, p, ChatColor.GREEN, true);
                                 }
                             }
                         } else {
-                            addInvertedParticle(p, b);
+                            playerCachedBlocks.add(b);
+                            updateGlowingBlock(b, p, ChatColor.BLACK, true);
                             nullMachines.add(b.getX() + ", " + b.getY() + ", " + b.getZ());
                             BlockStorage.clearBlockInfo(b);
                         }
@@ -249,68 +309,67 @@ public class SlimeEyeGod extends SlimeEye {
                 }
             }
         }
-        sendCountMessage(p, networkBlocks.size(), cached.size(), airBlocks.size(), nullMachines);
-    }
 
-    @Override
-    protected void addParticle(Player p, Block b) {
-        Vector loc = b.getLocation().toVector();
-        Utilities.particlesVanilla(p, loc);
-    }
+        long currentTime = System.currentTimeMillis();
+        long lastSent = lastMessageSentMap.getOrDefault(pUUID, 0L);
+        int lastNetworkCount = lastNetworkCountMap.getOrDefault(pUUID, 0);
+        int lastTotalCount = lastTotalCountMap.getOrDefault(pUUID, 0);
+        int lastAirCount = lastAirCountMap.getOrDefault(pUUID, 0);
 
-    protected void addInvertedParticle(Player p, Block b) {
-        Vector blockCenter = b.getLocation().toVector().add(new Vector(0.5, 0.5, 0.5));
-        Utilities.particlesInverted(p, blockCenter);
-    }
+        boolean newMachinesFound = networkBlocks.size() != lastNetworkCount ||
+            playerCachedBlocks.size() != lastTotalCount ||
+            airBlocks.size() != lastAirCount;
 
-    private void sendCountMessage(Player p, int networkCount, int totalCount, int airCount, List<String> nullMachines) {
-        if (isInvisibleToggledOn) {
-            sendAirMsg(p, airCount);
-        } else {
-            super.sendCountMessage(p, totalCount, false);
-            sendNetworksMsg(p, networkCount);
-            sendAirMsg(p, airCount);
-            sendNullMsg(p, nullMachines);
+        if (currentTime - lastSent >= 5000 || newMachinesFound) {
+            sendCountMessage(p, networkBlocks.size(), playerCachedBlocks.size(), airBlocks.size(), nullMachines);
+
+            lastMessageSentMap.put(pUUID, currentTime);
+            lastNetworkCountMap.put(pUUID, networkBlocks.size());
+            lastTotalCountMap.put(pUUID, playerCachedBlocks.size());
+            lastAirCountMap.put(pUUID, airBlocks.size());
         }
     }
 
-    private void sendNetworksMsg(Player p, int networkCount) {
-        netMsgCooldown = Utilities.sendCountMessage(p, networkCount, "Network machines", netMsgCooldown, prevNetCount);
-        prevNetCount = networkCount;
-    }
 
-    private void sendAirMsg(Player p, int airCount) {
-        airMsgCooldown = Utilities.sendCountMessage(p, airCount, "Invisible machines", airMsgCooldown, prevAirCount);
-        prevAirCount = airCount;
-    }
+    private void sendCountMessage(Player p, int networkCount, int totalCount, int airCount, List<String> nullMachines) {
+        UUID pUUID = p.getUniqueId();
+        boolean isInvisibleToggled = invisibleToggledOn.getOrDefault(pUUID, false);
 
-    private void sendNullMsg(Player p, List<String> nullMachines) {
-        nullMsgCooldown = Utilities.sendNullCountMessage(p, nullMachines, nullMsgCooldown, prevNullCount);
-        prevNullCount = nullMachines.size();
+        StringBuilder m = new StringBuilder();
+        m.append("§nIn Range:\n");
+
+        if (isInvisibleToggled) {
+            m.append("§7Invisible: §e").append(airCount).append("\n");
+        } else {
+            m.append("§5Networks: §e").append(networkCount).append("\n");
+            m.append("§7Invisible: §e").append(airCount).append("\n");
+            m.append("§aValid: §e").append(totalCount).append("\n");
+
+            if (!nullMachines.isEmpty()) {
+                m.append("§cNull:\n");
+                for (String machine : nullMachines) {
+                    m.append("§7").append(machine).append("\n");
+                }
+            }
+        }
+        m.append("§f┈┈┈┈┈┈┈┈┈┈┈┈┈┈\n");
+        p.sendMessage(m.toString());
     }
 
     @EventHandler
-    @Override
     protected void onItemHeld(@NotNull PlayerItemHeldEvent e) {
         Player p = e.getPlayer();
         ItemStack newItem = p.getInventory().getItem(e.getNewSlot());
-        UUID playerUUID = p.getUniqueId();
+        UUID pUUID = p.getUniqueId();
 
-        if (activeTasks.containsKey(playerUUID) && !Utilities.isSlimeEyeGod(newItem)) {
-            cancelHighlight(playerUUID);
-            cached.clear();
-            isToggledOn = false;
-            isInvisibleToggledOn = false;
-            p.sendMessage("§cSlime Gaze disabled.");
-        }
-    }
-
-    @Override
-    @EventHandler
-    public void onPlayerQuit(@NotNull PlayerQuitEvent e) {
-        UUID playerUUID = e.getPlayer().getUniqueId();
-        if (activeTasks.containsKey(playerUUID)) {
-            cancelHighlight(playerUUID);
+        if (Utilities.isSlimeEyeGod(p.getInventory().getItemInMainHand())) {
+            if (activeTasks.containsKey(pUUID) && !Utilities.isSlimeEyeGod(newItem)) {
+                cancelHighlightTask(pUUID);
+                cachedBlocks.remove(pUUID, cachedBlocks);
+                toggledOn.put(pUUID, false);
+                invisibleToggledOn.put(pUUID, false);
+                p.sendMessage("§cSlime Gaze disabled.");
+            }
         }
     }
 }

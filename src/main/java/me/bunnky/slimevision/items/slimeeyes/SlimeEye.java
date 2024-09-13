@@ -1,5 +1,6 @@
 package me.bunnky.slimevision.items.slimeeyes;
 
+import fr.skytasul.glowingentities.GlowingBlocks;
 import io.github.thebusybiscuit.slimefun4.api.events.PlayerRightClickEvent;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
@@ -9,18 +10,17 @@ import io.github.thebusybiscuit.slimefun4.core.handlers.ItemUseHandler;
 import io.github.thebusybiscuit.slimefun4.implementation.items.SimpleSlimefunItem;
 import me.bunnky.slimevision.SlimeVision;
 import me.bunnky.slimevision.utility.Utilities;
-import org.bukkit.Color;
+import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
@@ -37,16 +37,14 @@ public class SlimeEye extends SimpleSlimefunItem<ItemUseHandler> implements NotP
 
     protected final int r;
     protected final int cd;
-    protected int msgCd = 0;
-    protected int prevCount = 0;
-    protected int colorIdx = 0;
-
-    protected final Set<Block> cached = new HashSet<>();
-
-    protected static final Map<UUID, BukkitTask> activeTasks = new HashMap<>();
+    protected int cIdx = 0;
+    protected final Map<UUID, Integer> msgCds = new HashMap<>();
+    protected final Map<UUID, Integer> prev = new HashMap<>();
+    protected final Map<UUID, Set<Block>> cachedBlocks = new HashMap<>();
+    protected static final Map<UUID, BukkitRunnable> activeTasks = new HashMap<>();
     protected static final Map<UUID, Long> lastActionTime = new HashMap<>();
 
-    protected static final Color[] colorOpts = {Color.RED, Color.AQUA, Color.YELLOW, Color.GREEN, Color.ORANGE, Color.PURPLE, Color.BLUE, Color.BLACK, Color.WHITE, Color.GRAY, Color.LIME, Color.FUCHSIA, Color.MAROON, Color.TEAL};
+    protected static final ChatColor[] cOpts = {ChatColor.RED, ChatColor.DARK_RED, ChatColor.AQUA, ChatColor.DARK_AQUA, ChatColor.YELLOW, ChatColor.GREEN, ChatColor.DARK_GREEN, ChatColor.LIGHT_PURPLE, ChatColor.DARK_PURPLE, ChatColor.DARK_BLUE, ChatColor.BLUE, ChatColor.GRAY, ChatColor.DARK_GRAY, ChatColor.BLACK, ChatColor.WHITE};
 
     public SlimeEye(ItemGroup itemGroup,
                     SlimefunItemStack item,
@@ -80,25 +78,24 @@ public class SlimeEye extends SimpleSlimefunItem<ItemUseHandler> implements NotP
         }
 
         Player p = e.getPlayer();
-        UUID playerUUID = p.getUniqueId();
+        UUID pUUID = p.getUniqueId();
+        cachedBlocks.putIfAbsent(pUUID, new HashSet<>());
 
         if (p.isSneaking()) {
             cycleColor(p);
             return;
         }
 
-        Long lastTime = lastActionTime.get(playerUUID);
         long currentTime = System.currentTimeMillis();
-        int cooldown = getCooldown();
-
-        if (lastTime != null && (currentTime - lastTime) < cooldown) {
-            long remainingTime = (cooldown - (currentTime - lastTime)) / 1000;
+        if (lastActionTime.containsKey(pUUID) &&
+            (currentTime - lastActionTime.get(pUUID)) < getCooldown()) {
+            long remainingTime = (getCooldown() - (currentTime - lastActionTime.get(pUUID))) / 1000;
             p.sendMessage("§cYou must wait " + remainingTime + " seconds.");
             return;
         }
 
-        lastActionTime.put(playerUUID, currentTime);
-        cached.clear();
+        lastActionTime.put(pUUID, currentTime);
+        cachedBlocks.remove(pUUID,cachedBlocks);
         startHighlight(p);
     }
 
@@ -107,38 +104,53 @@ public class SlimeEye extends SimpleSlimefunItem<ItemUseHandler> implements NotP
         lastActionTime.entrySet().removeIf(entry -> (now - entry.getValue()) > cd);
     }
 
-
     protected void cycleColor(@NotNull Player p) {
-        colorIdx = (colorIdx + 1) % (colorOpts.length + 1);
-        String colorName = colorIdx == 0 ? "§eDefault" : Utilities.getColorName(colorOpts[colorIdx - 1]);
-        p.sendMessage("§aParticle color set to: §e" + colorName);
+        cIdx = (cIdx + 1) % (cOpts.length + 1);
+        String colorName = cIdx == 0 ? "§eDefault" : Utilities.getColorName(cOpts[cIdx - 1]);
+        p.sendMessage("§aGlow color set to: §e" + colorName);
     }
 
     protected void startHighlight(@NotNull Player p) {
-        UUID playerUUID = p.getUniqueId();
-
-        if (activeTasks.containsKey(playerUUID)) {
+        UUID pUUID = p.getUniqueId();
+        if (activeTasks.containsKey(pUUID)) {
             return;
         }
-
         p.sendMessage("§6Slime Gaze enabled.");
-        BukkitTask task = new BukkitRunnable() {
+
+        BukkitRunnable task = new BukkitRunnable() {
             @Override
             public void run() {
                 checkBlocks(p, false);
             }
-        }.runTaskTimer(SlimeVision.getInstance(), 0L, 40L);
-
-        activeTasks.put(playerUUID, task);
+        };
+        task.runTaskTimer(SlimeVision.getInstance(), 0L, 20L);
+        activeTasks.put(pUUID, task);
 
         getServer().getScheduler().runTaskLater(SlimeVision.getInstance(), () -> {
-            cancelHighlight(playerUUID);
+            cancelHighlight(pUUID);
             p.sendMessage("§cSlime Gaze disabled.");
-
         }, 10 * 20L);
     }
 
+    protected void cancelHighlight(UUID pUUID) {
+        BukkitRunnable task = activeTasks.remove(pUUID);
+        if (task != null) {
+            task.cancel();
+        }
+
+        Player p = getServer().getPlayer(pUUID);
+        if (p != null) {
+            for (Block b : cachedBlocks.get(pUUID)) {
+                updateGlowingBlock(b, p, null, false);
+            }
+            cachedBlocks.remove(pUUID, cachedBlocks);
+        }
+    }
+
+
     protected void checkBlocks(@NotNull Player p, boolean inverted) {
+        UUID pUUID = p.getUniqueId();
+        Set<Block> cached = cachedBlocks.get(pUUID);
         World w = p.getWorld();
         Vector loc = Utilities.getPlayerVector(p);
 
@@ -156,82 +168,103 @@ public class SlimeEye extends SimpleSlimefunItem<ItemUseHandler> implements NotP
 
         Set<Block> currBlocks = new HashSet<>();
 
+        ChatColor currentColor = cIdx == 0 ? ChatColor.GREEN : cOpts[cIdx - 1];
+
+        for (Block b : cached) {
+            if (!isInRange(b, minX, minY, minZ, maxX, maxY, maxZ) || !Utilities.hasBlockStorage(b) || b.getType()
+                .isAir()) {
+                updateGlowingBlock(b, p, currentColor, false);
+            }
+        }
+
         for (int x = minX; x <= maxX; x++) {
             for (int y = minY; y <= maxY; y++) {
                 for (int z = minZ; z <= maxZ; z++) {
-                    Block b = w.getBlockAt(x, y, z);
 
+                    Block b = w.getBlockAt(x, y, z);
                     boolean isAirOrLiquid = Utilities.isAirOrLiquid(b);
+
                     if ((inverted && !isAirOrLiquid) || (!inverted && isAirOrLiquid)) {
                         continue;
                     }
 
                     if (cached.contains(b)) {
                         currBlocks.add(b);
-                        addParticle(p, b);
+                        updateGlowingBlock(b, p, currentColor, true);
                     } else if (Utilities.hasBlockStorage(b)) {
                         cached.add(b);
                         currBlocks.add(b);
-                        addParticle(p, b);
+                        updateGlowingBlock(b, p, currentColor, true);
                     }
                 }
             }
         }
         cached.retainAll(currBlocks);
-        sendCountMessage(p, currBlocks.size(), inverted);
+        sendCountMessage(p, cached.size(), inverted);
     }
 
-    protected void addParticle(Player p, Block b) {
-        Vector blockLocation = b.getLocation().toVector();
+    protected void updateGlowingBlock(Block b, Player p, ChatColor c, boolean glow) {
+        GlowingBlocks glowingBlocks = SlimeVision.getInstance().getGlowingBlocks();
+        try {
+            if (glow) {
+                glowingBlocks.setGlowing(b, p, c);
+            } else {
+                glowingBlocks.unsetGlowing(b, p);
+            }
+        } catch (ReflectiveOperationException e) {
+            e.printStackTrace();
+        }
+    }
 
-        if (colorIdx == 0) {
-            Utilities.particlesVanilla(p, blockLocation);
+    protected boolean isInRange(Block b, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+        int bX = b.getX();
+        int bY = b.getY();
+        int bZ = b.getZ();
+        return (bX >= minX && bX <= maxX) && (bY >= minY && bY <= maxY) && (bZ >= minZ && bZ <= maxZ);
+    }
+
+    protected void sendCountMessage(Player p, int total, boolean inverted) {
+        UUID pUUID = p.getUniqueId();
+
+        int currCd = msgCds.getOrDefault(pUUID, 0);
+        int prevCnt = prev.getOrDefault(pUUID, 0);
+
+        if (currCd > 0 && total == prevCnt) {
+            msgCds.put(pUUID, currCd - 1);
+            return;
+        }
+
+        StringBuilder m = new StringBuilder();
+        m.append("§nIn Range:\n");
+
+        if (inverted) {
+            m.append("§7Invisible: §e").append(total).append("\n");
         } else {
-            Utilities.particlesSingleColor(p, blockLocation, colorOpts[colorIdx - 1]);
+            m.append("§aValid: §e").append(total).append("\n");
         }
-    }
+        m.append("§f┈┈┈┈┈┈┈┈┈┈┈┈┈┈\n");
 
-    protected void sendCountMessage(Player p, int totalHighlightedMachines, boolean inverted) {
-        if (msgCd <= 0 || totalHighlightedMachines != prevCount) {
-            String message = inverted
-                             ? "§e" + totalHighlightedMachines + " §aInvisible machines in range"
-                             : "§e" + totalHighlightedMachines + " §aMachines in range";
-            p.sendMessage(message);
-            msgCd = 5;
-        } else {
-            msgCd--;
-        }
+        p.sendMessage(m.toString());
 
-        prevCount = totalHighlightedMachines;
-    }
-
-    @EventHandler
-    protected void onItemHeld(@NotNull PlayerItemHeldEvent e) {
-        Player p = e.getPlayer();
-        ItemStack newItem = p.getInventory().getItem(e.getNewSlot());
-        UUID playerUUID = p.getUniqueId();
-
-        if (activeTasks.containsKey(playerUUID) && !Utilities.isSlimeEye(newItem)) {
-            cancelHighlight(playerUUID);
-            cached.clear();
-            p.sendMessage("§cSlime Gaze disabled.");
-        }
-    }
-
-    protected void cancelHighlight(UUID playerUUID) {
-        BukkitTask task = activeTasks.remove(playerUUID);
-        if (task != null && !task.isCancelled()) {
-            task.cancel();
-        }
+        msgCds.put(pUUID, 5);
+        prev.put(pUUID, total);
     }
 
     @EventHandler
     protected void onPlayerQuit(PlayerQuitEvent e) {
-        UUID playerUUID = e.getPlayer().getUniqueId();
+        UUID pUUID = e.getPlayer().getUniqueId();
 
-        if (activeTasks.containsKey(playerUUID)) {
-            cancelHighlight(playerUUID);
-            cached.clear();
+        if (activeTasks.containsKey(pUUID)) {
+            cancelHighlight(pUUID);
+            cachedBlocks.remove(pUUID, cachedBlocks);
         }
+    }
+
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent e) {
+        Player p = e.getPlayer();
+        Block b = e.getBlock();
+
+        updateGlowingBlock(b, p, null, false);
     }
 }
