@@ -47,31 +47,31 @@ public class SlimeCleaner extends SlimeEye {
     }
 
     protected void removeBlocksInRadius(Player p) {
-        World world = p.getWorld();
-        Vector playerLocation = p.getLocation().toVector();
+        World w = p.getWorld();
+        Vector loc = p.getLocation().toVector();
 
-        int minX = playerLocation.getBlockX() - 10;
-        int minY = Math.max(playerLocation.getBlockY() - 10, world.getMinHeight());
-        int minZ = playerLocation.getBlockZ() - 10;
-        int maxX = playerLocation.getBlockX() + 10;
-        int maxY = Math.min(playerLocation.getBlockY() + 10, world.getMaxHeight());
-        int maxZ = playerLocation.getBlockZ() + 10;
+        int minX = loc.getBlockX() - 10;
+        int minY = Math.max(loc.getBlockY() - 10, w.getMinHeight());
+        int minZ = loc.getBlockZ() - 10;
+        int maxX = loc.getBlockX() + 10;
+        int maxY = Math.min(loc.getBlockY() + 10, w.getMaxHeight());
+        int maxZ = loc.getBlockZ() + 10;
 
         for (int x = minX; x <= maxX; x++) {
             for (int y = minY; y <= maxY; y++) {
                 for (int z = minZ; z <= maxZ; z++) {
-                    Block block = world.getBlockAt(x, y, z);
+                    Block b = w.getBlockAt(x, y, z);
 
-                    if (BlockStorage.hasBlockInfo(block)) {
+                    if (BlockStorage.hasBlockInfo(b)) {
                         new BukkitRunnable() {
                             @Override
                             public void run() {
-                                BlockBreakEvent breakEvent = new BlockBreakEvent(block, p);
-                                getPluginManager().callEvent(breakEvent);
+                                BlockBreakEvent e = new BlockBreakEvent(b, p);
+                                getPluginManager().callEvent(e);
 
-                                if (!breakEvent.isCancelled()) {
-                                    BlockStorage.clearBlockInfo(block);
-                                    block.setType(Material.AIR);
+                                if (!e.isCancelled()) {
+                                    BlockStorage.clearBlockInfo(b);
+                                    b.setType(Material.AIR);
                                 }
                             }
                         }.runTaskLater(SlimeVision.getInstance(), 1);
