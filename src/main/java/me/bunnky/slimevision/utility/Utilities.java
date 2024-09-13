@@ -4,7 +4,6 @@ import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import me.bunnky.slimevision.items.GoldenSlimeFish;
 import me.bunnky.slimevision.items.ParticleItem;
-import me.bunnky.slimevision.items.slimeeyes.SlimeEye;
 import me.bunnky.slimevision.items.slimeeyes.SlimeEyeGod;
 import me.mrCookieSlime.Slimefun.api.BlockStorage;
 import org.bukkit.ChatColor;
@@ -19,7 +18,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
 
 public class Utilities {
 
@@ -74,40 +72,9 @@ public class Utilities {
         placeBlock.setType(material);
     }
 
-    public static int sendCountMessage(Player p, int count, String messageType, int msgCooldown, int prevCount) {
-        if (msgCooldown <= 0 || count != prevCount) {
-            p.sendMessage("§e" + count + " §a" + messageType + " in range");
-            msgCooldown = 5;
-        } else {
-            msgCooldown--;
-        }
-        return msgCooldown;
-    }
-
-    public static int sendNullCountMessage(Player p, List<String> nullMachines, int msgCooldown, int prevCount) {
-        if (msgCooldown <= 0 || nullMachines.size() != prevCount) {
-            if (!nullMachines.isEmpty()) {
-                StringBuilder message = new StringBuilder("§cCleared Null Machines:\n");
-                for (String coords : nullMachines) {
-                    message.append("§7").append(coords).append("\n");
-                }
-                p.sendMessage(message.toString());
-            }
-            msgCooldown = 5;
-        } else {
-            msgCooldown--;
-        }
-        return msgCooldown;
-    }
-
     public static boolean isGSF(ItemStack i) {
         SlimefunItem sfItem = SlimefunItem.getByItem(i);
         return sfItem instanceof GoldenSlimeFish;
-    }
-
-    public static boolean isSlimeEye(ItemStack i) {
-        SlimefunItem sfItem = SlimefunItem.getByItem(i);
-        return sfItem instanceof SlimeEye;
     }
 
     public static boolean isSlimeEyeGod(ItemStack i) {
@@ -120,16 +87,16 @@ public class Utilities {
         return sfItem instanceof ParticleItem;
     }
 
-    public static Vector getPlayerVector(Player player) {
-        return player.getLocation().toVector();
+    public static Vector getPlayerVector(Player p) {
+        return p.getLocation().toVector();
     }
 
-    public static boolean isAirOrLiquid(Block block) {
-        return block.getType().isAir() || block.isLiquid();
+    public static boolean isAirOrLiquid(Block b) {
+        return b.getType().isAir() || b.isLiquid();
     }
 
-    public static boolean hasBlockStorage(Block block) {
-        return BlockStorage.hasBlockInfo(block);
+    public static boolean hasBlockStorage(Block b) {
+        return BlockStorage.hasBlockInfo(b);
     }
 
     public static int getClampedCoordinate(int coordinate, int radius, int min, int max) {
