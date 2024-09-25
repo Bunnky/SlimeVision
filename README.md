@@ -1,6 +1,6 @@
 ![SlimeVision](https://github.com/user-attachments/assets/044e9fec-5a44-4b16-b091-23738f4ae4bf)
 
-### Slime Vision is a Slimefun Addon that gives people a way to visualize their Slimefun machines with ease, and locate SF Block Storage data.
+### Slime Vision is a Slimefun Addon that gives people a way to visualize their Slimefun machines and locate SF Block Storage data with ease.
 
 ## How it works
 Slime Vision allows players to craft various types of 'Slime Eyes.' Once crafted, right-clicking with a Slime Eye will cause all Slimefun machines (excluding multi-block machines) within the eye's radius to glow. There's a small/medium crafting chain to create Slime Eyes like you would expect, and there's even a Networks specific Slime Eye that will only mark Network blocks if Networks is installed on the server. Network Slime Eyes make it much easier to differentiate between vanilla glass and Networks glass!
