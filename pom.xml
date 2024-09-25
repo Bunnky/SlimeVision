@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>me.bunnky</groupId>
     <artifactId>SlimeVision</artifactId>
-    <version>DEV - 2</version>
+    <version>DEV - 3</version>
 
     <name>SlimeVision</name>
     <description>A Slimefun Addon that enables players to see Slimefun machines at a glance.</description>
@@ -94,7 +94,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.20.1-R0.1-SNAPSHOT</version>
+            <version>1.20.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
