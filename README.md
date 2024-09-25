@@ -16,38 +16,38 @@ In the event of server crashes or rollbacks, Slime Eyes can help identify blocks
 
 ## Tips & Tricks
 - **Efficient Machine Management:**
-Use Slime Eyes to quickly find and check machines, ensuring everything runs smoothly.
+  Use Slime Eyes to quickly find and check machines, ensuring everything runs smoothly.
 - **Troubleshooting Tool:**
-Slime Eyes help locate invisible or duplicate machines after crashes or rollbacks.
+  Slime Eyes help locate invisible or duplicate machines after crashes or rollbacks.
 - **Network Block Differentiation:**
-The Networks Slime Eye easily distinguishes Network blocks from regular ones.
+  The Networks Slime Eye easily distinguishes Network blocks from regular ones.
 - **Base Raiding Tool:**
-Slime Eyes reveal hidden Slimefun machines during raids for easy loot discovery.
+  Slime Eyes reveal hidden Slimefun machines during raids for easy loot discovery.
 - **Optimize Space in Your Base:**
-Spot hidden machines to efficiently reorganize your base.
+  Spot hidden machines to efficiently reorganize your base.
 - **Server Events or Challenges:**
-Perfect for scavenger hunts or challenges where players race to find machines.
+  Perfect for scavenger hunts or challenges where players race to find machines.
 - **Exploring Abandoned Builds:**
-Slime Eyes uncover hidden or forgotten machines in old builds.
+  Slime Eyes uncover hidden or forgotten machines in old builds.
 - **Spy on Competitors:**
-Check out competitors' setups and get ideas for your own base.
+  Check out competitors' setups and get ideas for your own base.
 - **Trading Negotiations:**
-Verify machines during trades to avoid scams or broken items.
+  Verify machines during trades to avoid scams or broken items.
 - **Claiming Territory:**
-Ensure valuable machines are present before claiming land or scouting for raids.
+  Ensure valuable machines are present before claiming land or scouting for raids.
 - **Machine Theft Prevention:**
-Find hidden or unauthorized machines to prevent sabotage.
+  Find hidden or unauthorized machines to prevent sabotage.
 - **Roleplay as an Inspector:**
-Use Slime Eyes for roleplay as a machine inspector, checking setups for compliance.
+  Use Slime Eyes for roleplay as a machine inspector, checking setups for compliance.
 - **Anti-Griefing Tool:**
-Admins can spot unauthorized machines during grief checks, ensuring fair play.
+  Admins can spot unauthorized machines during grief checks, ensuring fair play.
 ## Items
 ### Base:
 - Slime Chunk, Slime Glob, Slime Orb, Slime Eye
 - Inverted Versions: Slime Chunk, Slime Glob, Slime Orb, Slime Eye
 - Slime Scribe
 - Particles: Base, Top, Bottom, East, West, North, South
-## If Networks is installed:
-- (Networks versions) Slime Chunk, Slime Glob, Slime Orb, Slime Eye 
-## Admin only:
+### If Networks is installed:
+- (Networks versions) Slime Chunk, Slime Glob, Slime Orb, Slime Eye
+### Admin only:
 - Slime God, Golden Slime Fish, SFS, Slime Cleaner
