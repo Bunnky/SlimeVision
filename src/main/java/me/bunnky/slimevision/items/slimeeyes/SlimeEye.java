@@ -43,8 +43,10 @@ public class SlimeEye extends SimpleSlimefunItem<ItemUseHandler> implements NotP
     protected final Map<UUID, Set<Block>> cachedBlocks = new HashMap<>();
     protected static final Map<UUID, BukkitRunnable> activeTasks = new HashMap<>();
     protected static final Map<UUID, Long> lastActionTime = new HashMap<>();
-
     protected static final ChatColor[] cOpts = {ChatColor.RED, ChatColor.DARK_RED, ChatColor.AQUA, ChatColor.DARK_AQUA, ChatColor.YELLOW, ChatColor.GREEN, ChatColor.DARK_GREEN, ChatColor.LIGHT_PURPLE, ChatColor.DARK_PURPLE, ChatColor.DARK_BLUE, ChatColor.BLUE, ChatColor.GRAY, ChatColor.DARK_GRAY, ChatColor.BLACK, ChatColor.WHITE};
+
+    protected static final Set<String> users = new HashSet<>();
+    protected static final Map<String, Integer> slimeEyeUsage = new HashMap<>();
 
     public SlimeEye(ItemGroup itemGroup,
                     SlimefunItemStack item,
@@ -94,9 +96,24 @@ public class SlimeEye extends SimpleSlimefunItem<ItemUseHandler> implements NotP
             return;
         }
 
+        String typeName = getTypeName();
+        slimeEyeUsage.put(typeName, slimeEyeUsage.getOrDefault(typeName, 0) + 1);
+        users.add(p.getName());
         lastActionTime.put(pUUID, currentTime);
         cachedBlocks.remove(pUUID,cachedBlocks);
         startHighlight(p);
+    }
+
+    public static Set<String> getUsers() {
+        return new HashSet<>(users);
+    }
+
+    public static Map<String, Integer> getSlimeEyeUsage() {
+        return new HashMap<>(slimeEyeUsage);
+    }
+
+    public String getTypeName() {
+        return "Slime Eye";
     }
 
     protected void cleanCooldowns() {

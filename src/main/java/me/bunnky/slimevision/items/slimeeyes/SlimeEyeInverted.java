@@ -29,6 +29,11 @@ public class SlimeEyeInverted extends SlimeEye {
     }
 
     @Override
+    public String getTypeName() {
+        return "Inverted Slime Eye";
+    }
+
+    @Override
     protected void checkBlocks(@NotNull Player p, boolean inverted) {
         UUID pUUID = p.getUniqueId();
         Set<Block> cached = cachedBlocks.get(pUUID);

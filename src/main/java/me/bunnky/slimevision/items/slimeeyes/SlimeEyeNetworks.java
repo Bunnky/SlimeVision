@@ -31,6 +31,11 @@ public class SlimeEyeNetworks extends SlimeEye {
     }
 
     @Override
+    public String getTypeName() {
+        return "Networks Slime Eye";
+    }
+
+    @Override
     protected void startHighlight(@NotNull Player p) {
         super.startHighlight(p);
         checkBlocks(p, false);

@@ -32,6 +32,11 @@ public class SlimeScribe extends SlimeEyeInverted {
         super(itemGroup, item, recipeType, recipe, radius, cooldown);
     }
 
+    @Override
+    public String getTypeName() {
+        return "Slime Scribe";
+    }
+
     protected ItemStack createBook(Player p, List<Block> found) {
         ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
         BookMeta meta = (BookMeta) book.getItemMeta();
@@ -58,7 +63,7 @@ public class SlimeScribe extends SlimeEyeInverted {
             }
         }
 
-        if (firstPage.length() > 0) {
+        if (!firstPage.isEmpty()) {
             meta.addPage(firstPage.toString());
         }
         book.setItemMeta(meta);
@@ -88,6 +93,10 @@ public class SlimeScribe extends SlimeEyeInverted {
             p.sendMessage("§cYou must wait " + remainingTime + " seconds.");
             return;
         }
+
+        String typeName = getTypeName();
+        slimeEyeUsage.put(typeName, slimeEyeUsage.getOrDefault(typeName, 0) + 1);
+        users.add(p.getName());
 
         lastActionTime.put(pUUID, currentTime);
 

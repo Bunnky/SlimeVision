@@ -109,6 +109,11 @@ public class SlimeEyeGod extends SlimeEye {
         }
     }
 
+    @Override
+    public String getTypeName() {
+        return "Slime God";
+    }
+
     private void placeBlock(Block b, BlockFace f) {
         Utilities.placeBlock(b, f, Material.TARGET);
     }
@@ -123,6 +128,9 @@ public class SlimeEyeGod extends SlimeEye {
         }
 
         UUID pUUID = p.getUniqueId();
+        String typeName = getTypeName();
+        slimeEyeUsage.put(typeName, slimeEyeUsage.getOrDefault(typeName, 0) + 1);
+        users.add(p.getName());
 
         toggledOn.putIfAbsent(pUUID, false);
         invisibleToggledOn.putIfAbsent(pUUID, false);
@@ -168,7 +176,7 @@ public class SlimeEyeGod extends SlimeEye {
         if (isInvertedGazeOn) {
             cancelHighlightTask(pUUID);
             playerCachedBlocks.clear();
-            invisibleToggledOn.put(pUUID, false);  // Disable inverted gaze
+            invisibleToggledOn.put(pUUID, false);
             p.sendMessage("§cInverted Slime Gaze disabled.");
         }
 

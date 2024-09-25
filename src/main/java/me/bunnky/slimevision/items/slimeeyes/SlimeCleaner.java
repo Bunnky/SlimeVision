@@ -43,7 +43,16 @@ public class SlimeCleaner extends SlimeEye {
             return;
         }
 
+        String typeName = getTypeName();
+        slimeEyeUsage.put(typeName, slimeEyeUsage.getOrDefault(typeName, 0) + 1);
+        users.add(p.getName());
+
         removeBlocksInRadius(p);
+    }
+
+    @Override
+    public String getTypeName() {
+        return "Slime Cleaner";
     }
 
     protected void removeBlocksInRadius(Player p) {
