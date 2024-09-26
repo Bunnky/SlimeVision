@@ -16,9 +16,8 @@ public class VersionHandler {
         return minecraftVersion.startsWith(prefix);
     }
 
-
     public Material getTurtleScute() {
-        if (!isVersion("1.21")) {
+        if (!isVersion("1.20.5") || !isVersion("1.20.6")) {
             return Material.valueOf("SCUTE");
         } else {
             return Material.valueOf("TURTLE_SCUTE");
@@ -26,7 +25,7 @@ public class VersionHandler {
     }
 
     public Particle getRedstoneParticle() {
-        if (!isVersion("1.21")) {
+        if (!isVersion("1.20.5") || !isVersion("1.20.6")) {
             return getParticle("REDSTONE");
         } else {
             return getParticle("DUST");
