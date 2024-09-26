@@ -8,6 +8,7 @@ import io.github.thebusybiscuit.slimefun4.core.attributes.NotPlaceable;
 import io.github.thebusybiscuit.slimefun4.core.handlers.ItemUseHandler;
 import io.github.thebusybiscuit.slimefun4.implementation.items.SimpleSlimefunItem;
 import me.bunnky.slimevision.SlimeVision;
+import me.bunnky.slimevision.handlers.VersionHandler;
 import me.bunnky.slimevision.utility.Utilities;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -24,6 +25,7 @@ import javax.annotation.Nonnull;
 public class ParticleItem extends SimpleSlimefunItem<ItemUseHandler> implements NotPlaceable {
 
     private final Color particleColor;
+    private final VersionHandler versionHandler;
 
     public ParticleItem(ItemGroup itemGroup,
                         SlimefunItemStack item,
@@ -33,6 +35,7 @@ public class ParticleItem extends SimpleSlimefunItem<ItemUseHandler> implements 
     ) {
         super(itemGroup, item, recipeType, recipe);
         this.particleColor = color;
+        this.versionHandler = new VersionHandler();
     }
 
     @Nonnull
@@ -70,7 +73,7 @@ public class ParticleItem extends SimpleSlimefunItem<ItemUseHandler> implements 
                     loc.add(dir.clone().multiply(SPEED));
 
                     p.getWorld().spawnParticle(
-                        Particle.REDSTONE,
+                        versionHandler.getRedstoneParticle(),
                         loc,
                         0,
                         new Particle.DustOptions(particleColor, 1)

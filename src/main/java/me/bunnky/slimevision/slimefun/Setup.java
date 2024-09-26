@@ -9,6 +9,7 @@ import io.github.thebusybiscuit.slimefun4.implementation.SlimefunItems;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 import lombok.experimental.UtilityClass;
 import me.bunnky.slimevision.SlimeVision;
+import me.bunnky.slimevision.handlers.VersionHandler;
 import me.bunnky.slimevision.items.GoldenSlimeFish;
 import me.bunnky.slimevision.items.ParticleItem;
 import me.bunnky.slimevision.items.SFS;
@@ -27,7 +28,10 @@ import org.bukkit.inventory.ItemStack;
 @UtilityClass
 public class Setup {
 
+
     public static void setup() {
+
+        VersionHandler versionHandler = new VersionHandler();
         SlimeVision plugin = SlimeVision.getInstance();
 
         ItemStack groupItem = new CustomItemStack(Material.ENDER_EYE, "&bSlime Vision", "", "I wish this worked!");
@@ -83,7 +87,7 @@ public class Setup {
         );
         SlimefunItemStack slimeChunk = new SlimefunItemStack(
             "SV_SLIMECHUNK",
-            Material.SCUTE,
+            versionHandler.getTurtleScute(),
             "&3Slime Chunk",
             "",
             "&eR-Click: &7Activate Slime Gaze",
