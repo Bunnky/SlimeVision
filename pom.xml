@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>me.bunnky</groupId>
     <artifactId>SlimeVision</artifactId>
-    <version>DEV - 3</version>
+    <version>DEV</version>
 
     <name>SlimeVision</name>
     <description>A Slimefun Addon that enables players to see Slimefun machines at a glance.</description>
