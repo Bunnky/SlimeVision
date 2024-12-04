@@ -14,6 +14,8 @@ Slime Eyes can be performance-intensive, so use them wisely. Originally designed
 
 In the event of server crashes or rollbacks, Slime Eyes can help identify blocks that were replaced with Slimefun machines, as well as find invisible machines. If you have duplicate block or slimefun related errors on load, Slime Eyes can help diagnose those as well. The plugin includes tools like the Golden Slime Fish for BlockStorage cleaning and an SFS for manual Slimefun saves. Slime God and SFS require OP privileges, but the GFS doesn't in case server owners would like to give that out to players. Admin items do not appear in the guide at all, and are only available with /sf give.
 
+https://github.com/user-attachments/assets/48a81093-061e-4fa5-9fb5-28ed3c7448dd
+
 ## Tips & Tricks
 - **Efficient Machine Management:**
   Use Slime Eyes to quickly find and check machines, ensuring everything runs smoothly.
