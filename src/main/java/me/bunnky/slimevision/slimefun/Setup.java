@@ -564,10 +564,10 @@ public class Setup {
         //########################
 
         if (Bukkit.getPluginManager().isPluginEnabled("Networks")) {
-            SlimeEyeNetworks slimeeyenetworks = new SlimeEyeNetworks(group, slimeEyeNetworks, RecipeType.PRESSURE_CHAMBER, slimeEyeNetworksRecipe, 20, 60000);
-            SlimeEyeNetworks slimeorbnetworks = new SlimeEyeNetworks(group, slimeOrbNetworks, RecipeType.PRESSURE_CHAMBER, slimeOrbNetworksRecipe, 12, 40000);
-            SlimeEyeNetworks slimeglobnetworks = new SlimeEyeNetworks(group, slimeGlobNetworks, RecipeType.PRESSURE_CHAMBER, slimeGlobNetworksRecipe, 7, 25000);
-            SlimeEyeNetworks slimechunknetworks = new SlimeEyeNetworks(group, slimeChunkNetworks, RecipeType.PRESSURE_CHAMBER, slimeChunkNetworksRecipe, 3, 10000);
+            SlimeEyeNetworks slimeeyenetworks = new SlimeEyeNetworks(group, slimeEyeNetworks, RecipeType.MAGIC_WORKBENCH, slimeEyeNetworksRecipe, 20, 60000);
+            SlimeEyeNetworks slimeorbnetworks = new SlimeEyeNetworks(group, slimeOrbNetworks, RecipeType.MAGIC_WORKBENCH, slimeOrbNetworksRecipe, 12, 40000);
+            SlimeEyeNetworks slimeglobnetworks = new SlimeEyeNetworks(group, slimeGlobNetworks, RecipeType.MAGIC_WORKBENCH, slimeGlobNetworksRecipe, 7, 25000);
+            SlimeEyeNetworks slimechunknetworks = new SlimeEyeNetworks(group, slimeChunkNetworks, RecipeType.MAGIC_WORKBENCH, slimeChunkNetworksRecipe, 3, 10000);
 
             slimechunknetworks.register(plugin);
             slimeglobnetworks.register(plugin);
