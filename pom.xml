@@ -92,19 +92,19 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.20.6-R0.1-SNAPSHOT</version>
+            <version>1.21.1-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.github.Slimefun</groupId>
             <artifactId>Slimefun4</artifactId>
-            <version>RC-37</version>
+            <version>3ea21da4fe</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>io.github.baked-libs</groupId>
+            <groupId>com.github.Slimefun.dough</groupId>
             <artifactId>dough-api</artifactId>
-            <version>1.2.0</version>
+            <version>cb22e71335</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

@@ -34,7 +34,7 @@ public class Setup {
 
         SlimeVision plugin = SlimeVision.getInstance();
 
-        ItemStack groupItem = new CustomItemStack(Material.ENDER_EYE, "&bSlime Vision", "", "I wish this worked!");
+        ItemStack groupItem = CustomItemStack.create(Material.ENDER_EYE, "&bSlime Vision", "", "I wish this worked!");
         NamespacedKey groupId = new NamespacedKey(SlimeVision.getInstance(), "slime_vision");
         ItemGroup group = new ItemGroup(groupId, groupItem);
 
@@ -392,103 +392,103 @@ public class Setup {
 
         ItemStack[] slimeScribeRecipe = {
             null, null, null,
-            null, slimeEyeInverted, null,
+            null, slimeEyeInverted.item(), null,
             null, null, null
         };
         ItemStack[] slimeEyeInvertedRecipe = {
-            null, SlimefunItems.HEAVY_CREAM, null,
-            null, slimeEye, null,
+            null, SlimefunItems.HEAVY_CREAM.item(), null,
+            null, slimeEye.item(), null,
             null, null, null
         };
         ItemStack[] slimeOrbInvertedRecipe = {
-            null, SlimefunItems.HEAVY_CREAM, null,
-            null, slimeOrb, null,
+            null, SlimefunItems.HEAVY_CREAM.item(), null,
+            null, slimeOrb.item(), null,
             null, null, null
         };
         ItemStack[] slimeGlobInvertedRecipe = {
-            null, SlimefunItems.HEAVY_CREAM, null,
-            null, slimeGlob, null,
+            null, SlimefunItems.HEAVY_CREAM.item(), null,
+            null, slimeGlob.item(), null,
             null, null, null
         };
         ItemStack[] slimeChunkInvertedRecipe = {
-            null, SlimefunItems.HEAVY_CREAM, null,
-            null, slimeChunk, null,
+            null, SlimefunItems.HEAVY_CREAM.item(), null,
+            null, slimeChunk.item(), null,
             null, null, null
         };
         ItemStack[] slimeEyeNetworksRecipe = {
             null, null, null,
-            null, slimeEye, null,
+            null, slimeEye.item(), null,
             null, null, null
         };
         ItemStack[] slimeOrbNetworksRecipe = {
             null, null, null,
-            null, slimeOrb, null,
+            null, slimeOrb.item(), null,
             null, null, null
         };
         ItemStack[] slimeGlobNetworksRecipe = {
             null, null, null,
-            null, slimeGlob, null,
+            null, slimeGlob.item(), null,
             null, null, null
         };
         ItemStack[] slimeChunkNetworksRecipe = {
             null, null, null,
-            null, slimeChunk, null,
+            null, slimeChunk.item(), null,
             null, null, null
         };
         ItemStack[] slimeEyeRecipe = {
-            particleNorth, particleTop, SlimefunItems.ADVANCED_CIRCUIT_BOARD,
-            particleWest, slimeOrb, particleEast,
-            SlimefunItems.ADVANCED_CIRCUIT_BOARD, particleBottom, particleSouth
+            particleNorth.item(), particleTop.item(), SlimefunItems.ADVANCED_CIRCUIT_BOARD.item(),
+            particleWest.item(), slimeOrb.item(), particleEast.item(),
+            SlimefunItems.ADVANCED_CIRCUIT_BOARD.item(), particleBottom.item(), particleSouth.item()
         };
         ItemStack[] slimeOrbRecipe = {
-            particleNorth, particleTop, SlimefunItems.ADVANCED_CIRCUIT_BOARD,
-            particleWest, slimeGlob, particleEast,
-            SlimefunItems.ADVANCED_CIRCUIT_BOARD, particleBottom, particleSouth
+            particleNorth.item(), particleTop.item(), SlimefunItems.ADVANCED_CIRCUIT_BOARD.item(),
+            particleWest.item(), slimeGlob.item(), particleEast.item(),
+            SlimefunItems.ADVANCED_CIRCUIT_BOARD.item(), particleBottom.item(), particleSouth.item()
         };
         ItemStack[] slimeGlobRecipe = {
-            particleNorth, particleTop, SlimefunItems.ADVANCED_CIRCUIT_BOARD,
-            particleWest, slimeChunk, particleEast,
-            SlimefunItems.ADVANCED_CIRCUIT_BOARD, particleBottom, particleSouth
+            particleNorth.item(), particleTop.item(), SlimefunItems.ADVANCED_CIRCUIT_BOARD.item(),
+            particleWest.item(), slimeChunk.item(), particleEast.item(),
+            SlimefunItems.ADVANCED_CIRCUIT_BOARD.item(), particleBottom.item(), particleSouth.item()
         };
         ItemStack[] slimeChunkRecipe = {
-            particleNorth, particleTop, SlimefunItems.ADVANCED_CIRCUIT_BOARD,
-            particleWest, SlimefunItems.NETHER_ICE, particleEast,
-            SlimefunItems.ADVANCED_CIRCUIT_BOARD, particleBottom, particleSouth
+            particleNorth.item(), particleTop.item(), SlimefunItems.ADVANCED_CIRCUIT_BOARD.item(),
+            particleWest.item(), SlimefunItems.NETHER_ICE.item(), particleEast.item(),
+            SlimefunItems.ADVANCED_CIRCUIT_BOARD.item(), particleBottom.item(), particleSouth.item()
         };
         ItemStack[] particleBaseRecipe = {
-            SlimefunItems.AIR_RUNE, SlimefunItems.EARTH_RUNE, SlimefunItems.FIRE_RUNE,
-            SlimefunItems.WATER_RUNE, new ItemStack(Material.CANDLE), SlimefunItems.LIGHTNING_RUNE,
-            SlimefunItems.ESSENCE_OF_AFTERLIFE, SlimefunItems.RAINBOW_RUNE, SlimefunItems.SMALL_URANIUM
+            SlimefunItems.AIR_RUNE.item(), SlimefunItems.EARTH_RUNE.item(), SlimefunItems.FIRE_RUNE.item(),
+            SlimefunItems.WATER_RUNE.item(), new ItemStack(Material.CANDLE), SlimefunItems.LIGHTNING_RUNE.item(),
+            SlimefunItems.ESSENCE_OF_AFTERLIFE.item(), SlimefunItems.RAINBOW_RUNE.item(), SlimefunItems.SMALL_URANIUM.item()
         };
         ItemStack[] particleTopRecipe = {
             null, new ItemStack(Material.RED_DYE), null,
-            null, particleBase, null,
-            SlimefunItems.STEEL_THRUSTER, SlimefunItems.FUEL_BUCKET, SlimefunItems.STEEL_THRUSTER
+            null, particleBase.item(), null,
+            SlimefunItems.STEEL_THRUSTER.item(), SlimefunItems.FUEL_BUCKET.item(), SlimefunItems.STEEL_THRUSTER.item()
         };
         ItemStack[] particleBottomRecipe = {
-            SlimefunItems.STEEL_THRUSTER, SlimefunItems.FUEL_BUCKET, SlimefunItems.STEEL_THRUSTER,
-            null, particleBase, null,
+            SlimefunItems.STEEL_THRUSTER.item(), SlimefunItems.FUEL_BUCKET.item(), SlimefunItems.STEEL_THRUSTER.item(),
+            null, particleBase.item(), null,
             null, new ItemStack(Material.CYAN_DYE), null
         };
         ItemStack[] particleEastRecipe = {
-            SlimefunItems.STEEL_THRUSTER, null, null,
-            SlimefunItems.FUEL_BUCKET, particleBase, new ItemStack(Material.YELLOW_DYE),
-            SlimefunItems.STEEL_THRUSTER, null, null
+            SlimefunItems.STEEL_THRUSTER.item(), null, null,
+            SlimefunItems.FUEL_BUCKET.item(), particleBase.item(), new ItemStack(Material.YELLOW_DYE),
+            SlimefunItems.STEEL_THRUSTER.item(), null, null
         };
         ItemStack[] particleWestRecipe = {
-            null, null, SlimefunItems.STEEL_THRUSTER,
-            new ItemStack(Material.GREEN_DYE), particleBase, SlimefunItems.FUEL_BUCKET,
-            null, null, SlimefunItems.STEEL_THRUSTER
+            null, null, SlimefunItems.STEEL_THRUSTER.item(),
+            new ItemStack(Material.GREEN_DYE), particleBase.item(), SlimefunItems.FUEL_BUCKET.item(),
+            null, null, SlimefunItems.STEEL_THRUSTER.item()
         };
         ItemStack[] particleSouthRecipe = {
-            SlimefunItems.STEEL_THRUSTER, SlimefunItems.FUEL_BUCKET, SlimefunItems.STEEL_THRUSTER,
-            null, particleBase, null,
+            SlimefunItems.STEEL_THRUSTER.item(), SlimefunItems.FUEL_BUCKET.item(), SlimefunItems.STEEL_THRUSTER.item(),
+            null, particleBase.item(), null,
             null, new ItemStack(Material.ORANGE_DYE), null
         };
         ItemStack[] particleNorthRecipe = {
             null, new ItemStack(Material.PURPLE_DYE), null,
-            null, particleBase, null,
-            SlimefunItems.STEEL_THRUSTER, SlimefunItems.FUEL_BUCKET, SlimefunItems.STEEL_THRUSTER
+            null, particleBase.item(), null,
+            SlimefunItems.STEEL_THRUSTER.item(), SlimefunItems.FUEL_BUCKET.item(), SlimefunItems.STEEL_THRUSTER.item()
         };
 
         //########################
